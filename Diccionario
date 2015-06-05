@@ -1,0 +1,550 @@
+package diccionario;
+
+public class NodoLetra {
+    public NodoLetra hIzquierdo;
+    public NodoLetra hDerecho;
+    public char letra;
+    public NodoPalabra palabra;
+    
+    public NodoLetra() {
+        this.hDerecho = null;
+        this.hIzquierdo = null;
+        this.letra = '\0';
+        this.palabra = null;
+    }
+    
+    public NodoLetra(char l) {
+        this.hDerecho = null;
+        this.hIzquierdo = null;
+        this.letra = l;
+        this.palabra = null;
+    }
+}
+
+
+package diccionario;
+
+public class NodoPalabra {
+    public NodoPalabra hIzquierdo;
+    public NodoPalabra hDerecho;
+    public String palabra;
+    public String def;
+    
+    public NodoPalabra() {
+        this.hDerecho = null;
+        this.hIzquierdo = null;
+        this.palabra = null;
+        this.def = null;
+    }
+    
+    public NodoPalabra(String p, String d) {
+        this.hDerecho = null;
+        this.hIzquierdo = null;
+        this.palabra = p;
+        this.def = d;
+    }
+}
+
+package diccionario;
+
+public class ArbolLetras {
+    public NodoLetra raizL;
+    
+    public ArbolLetras() {
+        raizL = null;
+    }
+    
+    public boolean estaVacio(NodoLetra r) {
+        return r == null;
+    }
+    
+    //Método para añadir una nueva letra
+    public void añadirLetra(char l) {
+        //Pone el caracter en mayúscula
+        char f = (char)('A' + (l - 'a'));
+        NodoLetra n = new NodoLetra(f);
+        
+        if(raizL == null) {
+            raizL = n;
+        }else {
+            NodoLetra aux = raizL;
+            NodoLetra padre;
+            
+            while(true) {
+                padre = aux;
+                if(n.letra < aux.letra) {
+                    aux = aux.hIzquierdo;
+                    if(aux == null) {
+                        padre.hIzquierdo = n;
+                        return;
+                    }
+                }
+                if(n.letra > aux.letra) {
+                    aux = aux.hDerecho;
+                    if(aux == null) {
+                        padre.hDerecho = n;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+    
+    //Método para hallar el nodo del árbol que contiene la letra que se necesita
+    public NodoLetra buscar(char c, NodoLetra n) {
+        if(estaVacio(n)) {return null;}
+        
+        //Pone el caracter en mayúscula
+        char l = (char)('A' + (c - 'a'));
+        
+        NodoLetra aux = n;
+        while(aux.letra != l) {
+            if(aux.letra > l) {
+                aux = aux.hIzquierdo;
+            }else {
+                if(aux.letra < l) {
+                aux = aux.hDerecho;
+                }
+            }
+            if(aux == null) {
+                return null;
+            }
+        }
+        System.out.println(aux.palabra);
+        return aux;
+    }
+    
+    //Este método coloca el arbol de palabras al nodo de la letra
+    public void estPalabras(NodoLetra l, NodoPalabra p){
+        l.palabra = p;
+    }
+    
+    //Este método devuelve el arbol de palabras de un nodo letra
+    public ArbolPalabras obtArbolPalabras(NodoLetra l) {
+        ArbolPalabras p = new ArbolPalabras();
+        p.raizP = l.palabra;
+        System.out.println(p.raizP);
+        return p;
+    }
+}
+
+package diccionario;
+
+public class ArbolPalabras {
+    public NodoPalabra raizP;
+
+    public ArbolPalabras() {
+        raizP = null;
+    }
+    
+    public boolean estaVacio(NodoPalabra r) {
+        return r == null;
+    }
+    
+    //Añade las palabras al arbol de cada letra
+    public void añadirPalabra(String p, String d) {
+        NodoPalabra pal = new NodoPalabra(p, d);
+        
+        if(raizP == null) {
+            raizP = pal;
+        }else {
+            NodoPalabra padre;
+            NodoPalabra aux = raizP;
+            while(true) {
+                padre = aux;
+                if(aux.palabra.compareToIgnoreCase(p) < 0) {
+                    aux = aux.hIzquierdo;
+                    if(aux == null) {
+                        padre.hIzquierdo = pal;
+                        return;
+                    }
+                }else{
+                    aux = aux.hDerecho;
+                    if(aux == null) {
+                        padre.hDerecho = pal;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+    
+    //Este método busca la palabra
+    public NodoPalabra buscar(String p, NodoPalabra r) {
+        if(estaVacio(r)) {return null;}
+        
+        NodoPalabra aux = r;
+        while(aux.palabra.compareToIgnoreCase(p) != 0) {
+            if(aux.palabra.compareToIgnoreCase(p) < 0) {
+                aux = aux.hIzquierdo;
+            }else {
+                if(aux.palabra.compareToIgnoreCase(p) > 0) {
+                aux = aux.hDerecho;
+                }
+            }
+            if(aux == null) {return null;}
+        }
+        return aux;
+    }
+    
+    //Establece la definicion de la palabra
+    public void estDefinicion(String d, NodoPalabra p) {
+        p.def = d;
+    }
+}
+
+package diccionario.ventana;
+
+import diccionario.*;
+import javax.swing.JOptionPane;
+
+public class GUI extends javax.swing.JFrame {
+
+    ArbolLetras l = new ArbolLetras();
+    ArbolPalabras p = new ArbolPalabras();
+    
+    
+    
+    public GUI() {
+        initComponents();
+        this.setLocationRelativeTo(this);
+        jLabel2.setEnabled(false);
+        jLabel3.setEnabled(false);
+        jTextArea1.setEnabled(false);
+        jTextField2.setEnabled(false);
+        jButton2.setEnabled(false);
+        jButton3.setEnabled(false);
+    }
+
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    private void initComponents() {
+
+        Grupo1 = new javax.swing.ButtonGroup();
+        jPanel1 = new javax.swing.JPanel();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jTextField2 = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
+        jRadioButton1 = new javax.swing.JRadioButton();
+        jRadioButton2 = new javax.swing.JRadioButton();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        btnSalir = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jButton2.setText("Aceptar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton3.setText("Cancelar");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
+        jTextField2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField2ActionPerformed(evt);
+            }
+        });
+
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jScrollPane1.setViewportView(jTextArea1);
+
+        Grupo1.add(jRadioButton1);
+        jRadioButton1.setText("Agregar palabra");
+        jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton1ActionPerformed(evt);
+            }
+        });
+
+        Grupo1.add(jRadioButton2);
+        jRadioButton2.setText("Buscar");
+        jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton2ActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setText("Ingrese la palabra");
+
+        jLabel3.setText("Ingrese su significado");
+
+        btnSalir.setText("Salir");
+        btnSalir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSalirActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(25, 25, 25)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel2))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jRadioButton1)
+                                    .addComponent(jRadioButton2)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(118, 118, 118))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(25, 25, 25)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(27, 27, 27)
+                        .addComponent(jLabel3))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(9, 9, 9)
+                        .addComponent(jRadioButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jRadioButton2)))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton2)
+                    .addComponent(jButton3)
+                    .addComponent(btnSalir))
+                .addContainerGap(22, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 367, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+
+        pack();
+    }// </editor-fold>                        
+
+    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {                                            
+        // TODO add your handling code here:
+    }                                           
+
+    private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                              
+        jLabel2.setEnabled(true);
+        jLabel3.setEnabled(true);
+        jTextArea1.setEnabled(true);
+        jTextField2.setEnabled(true);
+        jButton2.setEnabled(true);
+        jButton3.setEnabled(true);
+        jTextField2.requestFocus();
+    }                                             
+
+    private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {                                              
+        jLabel3.setEnabled(false);
+        jTextArea1.setEnabled(false);
+        jButton2.setEnabled(true);
+        jButton3.setEnabled(true);
+        jLabel2.setEnabled(true);
+        jTextField2.setEnabled(true);
+        jTextField2.requestFocus();
+    }                                             
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        
+        
+        if(jRadioButton1.isSelected()) {
+            if(!jTextField2.getText().equals("")){
+                if(!jTextArea1.getText().equals("")) {
+                    char g = jTextField2.getText().charAt(0);
+                    if(!l.estaVacio(l.raizL)) {
+                        NodoLetra aux = l.buscar(g , l.raizL);
+                        ArbolPalabras p2 = new ArbolPalabras();
+                        if(aux != null && aux.palabra == null) {
+                            
+                            p2.añadirPalabra(jTextField2.getText(), 
+                                    jTextArea1.getText());
+                            l.estPalabras(aux, p2.raizP);
+                            JOptionPane.showMessageDialog(null, 
+                                    "Palabra añadida");
+                        }else {
+                            if(aux != null) {
+                                p = l.obtArbolPalabras(aux);
+                                p.añadirPalabra(jTextField2.getText(), 
+                                        jTextArea1.getText());
+                                JOptionPane.showMessageDialog(null, 
+                                    "Palabra añadida");
+                            }else {
+                                if(aux == null){
+                                    l.añadirLetra(g);
+                                    p2.añadirPalabra(jTextField2.getText(), 
+                                        jTextArea1.getText());
+                                    NodoLetra n = l.buscar(g, l.raizL);
+                                    n.palabra = p2.raizP;
+                                    JOptionPane.showMessageDialog(null, 
+                                        "Palabra añadida");
+                                }
+                            }
+                        }
+                    }else {
+                        l.añadirLetra(g);
+                        ArbolPalabras p2 = new ArbolPalabras();
+                        p2.añadirPalabra(jTextField2.getText(), 
+                                    jTextArea1.getText());
+                        NodoLetra n = l.raizL;
+                        n.palabra = p2.raizP;
+                        JOptionPane.showMessageDialog(null, 
+                                    "Palabra añadida");
+                    }
+                    
+                    jTextArea1.setText("");
+                    jTextField2.setText("");
+                    jTextField2.requestFocus();
+                }else {
+                    JOptionPane.showMessageDialog(this, 
+                            "Ingrese un significado");
+                    jTextField2.setText("");
+                }
+            }else {
+                JOptionPane.showMessageDialog(this, "Ingrese una palabra");
+                jTextField2.setText("");
+                jTextArea1.setText("");
+            }
+        }
+        
+        if(jRadioButton2.isSelected()) {
+            if(jTextField2.getText().equals("")){
+                JOptionPane.showMessageDialog(this, "Ingrese una palabra");
+            }else {
+                char f = jTextField2.getText().charAt(0);
+                NodoLetra n = l.buscar(f , l.raizL);
+                if(n != null) {
+                    p = l.obtArbolPalabras(n);
+                    NodoPalabra aux = p.buscar(jTextField2.getText(), p.raizP);
+            
+                    if(aux != null) {
+                        JOptionPane.showMessageDialog(null, 
+                                jTextField2.getText() +"\n\n" +aux.def);
+                    }else {
+                        JOptionPane.showMessageDialog(null,
+                                "No se encontró la palabra");
+                        jTextField2.setText("");
+                        jTextArea1.setText("");
+                    }
+                }else {
+                    JOptionPane.showMessageDialog(null,
+                            "No se encontró la palabra");
+                    jTextField2.setText("");
+                    jTextArea1.setText("");
+                }
+                jTextField2.setText("");
+                jTextArea1.setText("");
+            }
+        }
+        
+        
+        jLabel2.setEnabled(false);
+        jLabel3.setEnabled(false);
+        jTextArea1.setEnabled(false);
+        jTextField2.setEnabled(false);
+        jButton2.setEnabled(false);
+        jButton3.setEnabled(false);
+    }                                        
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        jTextArea1.setText("");
+        jTextField2.setText("");
+        jTextArea1.setEnabled(false);
+        jTextField2.setEnabled(false);
+        jLabel2.setEnabled(false);
+        jLabel3.setEnabled(false);
+        jButton2.setEnabled(false);
+        jButton3.setEnabled(false);
+    }                                        
+
+    private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        System.exit(0);
+    }                                        
+
+    
+    
+    public static void main(String[] args) {
+        
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new GUI().setVisible(true);
+                                
+            }
+        });
+        
+        
+        
+    }
+
+    // Variables declaration - do not modify                     
+    private javax.swing.ButtonGroup Grupo1;
+    private javax.swing.JButton btnSalir;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JRadioButton jRadioButton1;
+    private javax.swing.JRadioButton jRadioButton2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTextField jTextField2;
+    // End of variables declaration                   
+}
